@@ -1,0 +1,25 @@
+#################################################################################
+# Bluemix services enablement
+#################################################################################
+
+#################################################################################
+# Image names
+#################################################################################
+PROXY_IMAGE=microservices-refapp-zuul:latest
+
+#################################################################################
+# Image registries
+#################################################################################
+# BLUEMIX_REGISTRY_HOST - This info is accessible through `cf ic info`
+# US South Region: registry.ng.bluemix.net
+# UK London Region: registry.eu-gb.bluemix.net
+BLUEMIX_REGISTRY_HOST=registry.ng.bluemix.net
+
+BLUEMIX_REGISTRY_NAMESPACE=$(cf ic namespace get)
+
+#################################################################################
+# Routes
+#################################################################################
+ROUTES_DOMAIN=mybluemix.net
+PROXY_HOSTNAME=microservices-refapp-zuul-${BLUEMIX_REGISTRY_NAMESPACE}
+PROXY_URL=http://${REGISTRY_HOSTNAME}.${ROUTES_DOMAIN}
