@@ -30,16 +30,28 @@ for image in ${REQUIRED_IMAGES[@]}; do
 done
 
 
+REGISTRY_URL=${1}
+if [ "${REGISTRY_URL}" == "" ];
+then
+  echo "Missing required Eureka URL.  Exiting..."
+  exit 1
+fi
+
+#TODO Add in URL checking to ensure it ends in /eureka/
+
 #################################################################################
 # Start Eureka container group
 #################################################################################
 echo "Starting Zuul Proxy container group"
-echo "...with Eureka Cluster available at ${1}"
+echo "...with Eureka Cluster available at ${REGISTRY_URL}"
 cf ic group create --name zuul_cluster \
   --publish 8080 --memory 256 --auto \
   --min 1 --max 3 --desired 1 \
   --hostname ${PROXY_HOSTNAME} \
-  --domain ${PROXY_DOMAIN} \
-  --env eureka.client.serviceUrl.defaultZone=${1} \
-  --env eureka.instance.hostname=${REGISTRY_HOSTNAME}.${ROUTES_DOMAIN} \
+  --domain ${ROUTES_DOMAIN} \
+  --env eureka.client.serviceUrl.defaultZone="${REGISTRY_URL}" \
+  --env eureka.instance.hostname=${PROXY_HOSTNAME}.${ROUTES_DOMAIN} \
+  --env eureka.instance.nonSecurePort=80 \
+  --env eureka.instance.preferIpAddress=false \
+  --env spring.cloud.client.hostname=${PROXY_HOSTNAME}.${ROUTES_DOMAIN} \
   ${BLUEMIX_REGISTRY_HOST}/${BLUEMIX_REGISTRY_NAMESPACE}/${PROXY_IMAGE}
