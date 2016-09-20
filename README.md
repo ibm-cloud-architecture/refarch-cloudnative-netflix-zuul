@@ -58,7 +58,7 @@ There are no explicit APIs exposed by Zuul.  It is meant to be an API Gateway to
 
 2.  Edit the Bluemix Response File to select your desired external public route, application domain, and other operational details.  The default values in the `.bluemixrc` are acceptable to deploy in to the US-South Bluemix region.
 
-3.  To deploy Zuul as a container group onto the Bluemix Container Service, execute the following script and pass in the previously-noted Eureka location:
+3.  To deploy Zuul as a container group onto the Bluemix Container Service, execute the following script and pass in the previously-noted Eureka location:  
         `./deploy-container-group.sh http://microservices-refapp-eureka-cloudarch.mybluemix.net/eureka/`  
 
     This script will create a clustered group of homogeneous containers, with additional management capabilities provided by Bluemix.  The parameter passed into the script is the location of the Eureka service discovery container group, so that the Zuul Proxy container group can register with it upon startup.
@@ -71,7 +71,6 @@ There are no explicit APIs exposed by Zuul.  It is meant to be an API Gateway to
 #### Validate the Application Component Deployment
 1.  Validate that the Eureka user interface appears after a few seconds of the application being started.  
 2.  Verify that there is a registered `zuul-proxy` microservice registered with Eureka, visible in the Eureka Dashboard.  
-3.  You can now run additional services that register with Eureka and contact them through the Zuul Proxy.  
-    For instance, a service registered as `weather-service` in Eureka is accessible through the following Zuul Proxy URL:  
-    3.1. Locally:  http://localhost:8080/weather-service/ (with _localhost:8080_ being the default location of the running Zuul Proxy instance)
-    3.2. Bluemix:  http://microservices-refapp-zuul-cloudarch.mybluemix.net/weather-service (with _microservices-refapp-zuul-cloudarch_ being your configured `PROXY_HOSTNAME` in the .bluemixrc file)
+3.  You can now run additional services that register with Eureka and contact them through the Zuul Proxy.  For instance, a service registered as `weather-service` in Eureka is accessible through the following Zuul Proxy URL:  
+  3.1. Locally:  http://localhost:8080/weather-service/ (with _localhost:8080_ being the default location of the running Zuul Proxy instance)  
+  3.2. Bluemix:  http://microservices-refapp-zuul-cloudarch.mybluemix.net/weather-service (with _microservices-refapp-zuul-cloudarch_ being your configured `PROXY_HOSTNAME` in the .bluemixrc file)  
