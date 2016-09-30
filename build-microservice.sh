@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMAGE_NAME=microservices-refapp-zuul
+IMAGE_NAME=microservices-netflix-zuul
 MAVEN_BUILD_TARGET=target/zuul-proxy-0.0.1-SNAPSHOT.jar
 GRADLE_BUILD_TARGET=build/libs/zuul-proxy-0.0.1-SNAPSHOT.jar
 
