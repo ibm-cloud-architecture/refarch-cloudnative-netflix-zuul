@@ -1,3 +1,3 @@
 applications:
 - name: netflix-zuul
-  memory: 256M
+  memory: 512M
