@@ -35,11 +35,17 @@ There are no explicit APIs exposed by Zuul.  It is meant to be an API Gateway to
 - _(Optional)_ Apache Maven is used for an alternate build system.  [Click for instructions](https://maven.apache.org/install.html).
 
 #### Build the Application Component
-1.  Run one of the provided build scripts to compile the Java code, package it into a runnable JAR, and build the Docker image.  Run either  
-        `./build-mvn.sh`  
-  or  
-        `./build-gradle.sh`  
-  to run the Maven or Gradle builds, respectively.  Both build packages produce the same output, however both build files are provided for convenience of the user.
+1.  Build the application.  A utility script is provided to easily build using either Gradle (default) or Maven.  You can optionally specify the `-d` parameter to build the associated Docker image as well.  The default Gradle build instructions use a Gradle wrapper requiring no further installation.  The Maven build instructions require Maven to be installed locally.
+
+    1.1 Build the application using Gradle:
+      ```
+      ./build-microservice.sh [-d]
+      ```
+
+    1.1 Build the application using Maven:
+      ```
+      ./build-microservice.sh -m [-d]
+      ```
 
 #### Run the Application Component Locally
 1.  You will need a local [Eureka](https://github.com/ibm-cloud-architecture/refarch-cloudnative-netflix-eureka) application instance running to connect to, from which Zuul will proxy requests to additional service instances.
