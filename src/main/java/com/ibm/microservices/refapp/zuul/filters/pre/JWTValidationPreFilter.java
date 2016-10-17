@@ -68,7 +68,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		if (getHeader == null || getHeader.equals("null")) {
 			log.debug("Missing authentication header!");
 			
-			sendResponse(HttpServletResponse.SC_BAD_REQUEST, "Missing authentication header!");
+			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Missing authentication header!");
 			return null;
 		}
 
@@ -76,7 +76,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		if (!getHeader.toLowerCase().startsWith("bearer")) {
 			log.debug("Invalid authentication header!");
 			
-			sendResponse(HttpServletResponse.SC_BAD_REQUEST, "Invalid authentication header!");
+			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid authentication header!");
 			return null;
 		}
 		
@@ -86,7 +86,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		
 		if (arr.length < 2) {
 			log.debug("Invalid authentication header!");
-			sendResponse(HttpServletResponse.SC_BAD_REQUEST, "Invalid authentication header!");
+			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid authentication header!");
 			return null;
 		}
 		
@@ -136,10 +136,10 @@ public class JWTValidationPreFilter extends ZuulFilter {
 			
 		} catch (ParseException e) {
 			log.error("Parse exception: " + e.getMessage());
-			sendResponse(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
+			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
 		} catch (JOSEException e) {
 			log.error("JOSEException: " + e.getMessage());
-			sendResponse(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
+			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
 		}
 		
 		return null;
