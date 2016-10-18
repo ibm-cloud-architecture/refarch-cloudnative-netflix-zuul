@@ -1,3 +1,12 @@
+spring:
+  application:
+    name: zuul-proxy
+  sleuth:
+    sampler:
+      percentage: 1.0
+  zipkin:
+    baseUrl: ${vcap.services.zipkin-server.credentials.uri:http://localhost:9411}
+      
 server:
   port: ${vcap.application.port:8080}
 
