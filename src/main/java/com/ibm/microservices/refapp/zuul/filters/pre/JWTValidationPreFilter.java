@@ -147,16 +147,11 @@ public class JWTValidationPreFilter extends ZuulFilter {
 				sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "JWT token invalid");
 				return null;
 			}
-
-			
 		} catch (ParseException e) {
 			log.error("Parse exception: " + e.getMessage());
 			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
 		} catch (JOSEException e) {
 			log.error("JOSEException: " + e.getMessage());
-			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-		} catch (UnsupportedEncodingException e) {
-			log.error("UnsupportedEncodingException: " + e.getMessage());
 			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
 		}
 		
