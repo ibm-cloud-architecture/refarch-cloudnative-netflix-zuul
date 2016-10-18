@@ -107,7 +107,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		try {
 			final SignedJWT signedJWT = SignedJWT.parse(jwt);
 			final Base64 base64 = new Base64(true);
-			final JWSVerifier verifier = new MACVerifier(base64.encode(secret.getBytes()));
+			final JWSVerifier verifier = new MACVerifier(base64.decode(secret.getBytes()));
 
 			log.error("Issuer:" + signedJWT.getJWTClaimsSet().getIssuer());
 			log.error("Issue time:" + signedJWT.getJWTClaimsSet().getIssueTime());
