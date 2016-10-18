@@ -105,21 +105,23 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		try {
 			final SignedJWT signedJWT = SignedJWT.parse(jwt);
 			final JWSVerifier verifier = new MACVerifier(secret);
+
+			log.error("Issuer:" + signedJWT.getJWTClaimsSet().getIssuer());
+			log.error("Issue time:" + signedJWT.getJWTClaimsSet().getIssueTime());
+			log.error("Expiration time:" + signedJWT.getJWTClaimsSet().getExpirationTime());
+			log.error("Not Before time:" + signedJWT.getJWTClaimsSet().getNotBeforeTime());
+			log.error("Audience:" + signedJWT.getJWTClaimsSet().getAudience());
+	
 			
+			// verify the claims
 			if (!signedJWT.verify(verifier)) {
 				log.debug("Unable to verify JWT");
 				sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Unable to verify JWT token");
 				return null;
 			}
 			
+		
 			log.error("JWT token is valid!");
-			log.error("Issuer:" + signedJWT.getJWTClaimsSet().getIssuer());
-			log.error("Issue time:" + signedJWT.getJWTClaimsSet().getIssueTime());
-			log.error("Expiration time:" + signedJWT.getJWTClaimsSet().getExpirationTime());
-			log.error("Not Before time:" + signedJWT.getJWTClaimsSet().getNotBeforeTime());
-			log.error("Audience:" + signedJWT.getJWTClaimsSet().getAudience());
-			
-			// verify the claims
 			
 			// issuer must be "apic"
 			if (signedJWT.getJWTClaimsSet().getIssuer() == null ||
