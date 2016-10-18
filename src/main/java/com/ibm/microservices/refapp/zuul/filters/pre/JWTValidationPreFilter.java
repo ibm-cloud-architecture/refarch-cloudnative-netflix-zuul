@@ -62,7 +62,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		
 		final RequestContext ctx = RequestContext.getCurrentContext();
 		final HttpServletRequest request = ctx.getRequest();
-		final String getHeader = request.getHeader("Authentication");
+		final String getHeader = request.getHeader("Authorization");
 		
 		final Enumeration<String> headers = request.getHeaderNames();
 		
