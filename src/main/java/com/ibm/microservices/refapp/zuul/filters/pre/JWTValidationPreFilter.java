@@ -3,6 +3,7 @@ package com.ibm.microservices.refapp.zuul.filters.pre;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,6 +64,15 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		final HttpServletRequest request = ctx.getRequest();
 		final String getHeader = request.getHeader("Authentication");
 		
+		final Enumeration<String> headers = request.getHeaderNames();
+		
+		while (headers.hasMoreElements()) {
+			final String headerName = headers.nextElement();
+			final String header = request.getHeader(headerName);
+			
+			log.error(headerName+ "=" +header);
+		}
+		
 		log.trace(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
 		
 		if (getHeader == null || getHeader.equals("null")) {
@@ -102,12 +112,12 @@ public class JWTValidationPreFilter extends ZuulFilter {
 				return null;
 			}
 			
-			log.debug("JWT token is valid!");
-			log.debug("Issuer:" + signedJWT.getJWTClaimsSet().getIssuer());
-			log.debug("Issue time:" + signedJWT.getJWTClaimsSet().getIssueTime());
-			log.debug("Expiration time:" + signedJWT.getJWTClaimsSet().getExpirationTime());
-			log.debug("Not Before time:" + signedJWT.getJWTClaimsSet().getNotBeforeTime());
-			log.debug("Audience:" + signedJWT.getJWTClaimsSet().getAudience());
+			log.error("JWT token is valid!");
+			log.error("Issuer:" + signedJWT.getJWTClaimsSet().getIssuer());
+			log.error("Issue time:" + signedJWT.getJWTClaimsSet().getIssueTime());
+			log.error("Expiration time:" + signedJWT.getJWTClaimsSet().getExpirationTime());
+			log.error("Not Before time:" + signedJWT.getJWTClaimsSet().getNotBeforeTime());
+			log.error("Audience:" + signedJWT.getJWTClaimsSet().getAudience());
 			
 			// verify the claims
 			
