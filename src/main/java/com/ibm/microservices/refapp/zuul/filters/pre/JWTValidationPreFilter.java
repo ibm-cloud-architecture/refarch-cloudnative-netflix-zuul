@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +105,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		log.trace("Encoded token is: " + jwt);
 		try {
 			final SignedJWT signedJWT = SignedJWT.parse(jwt);
-			final JWSVerifier verifier = new MACVerifier(secret);
+			final JWSVerifier verifier = new MACVerifier(Base64.encodeBase64(secret.getBytes()));
 
 			log.error("Issuer:" + signedJWT.getJWTClaimsSet().getIssuer());
 			log.error("Issue time:" + signedJWT.getJWTClaimsSet().getIssueTime());
