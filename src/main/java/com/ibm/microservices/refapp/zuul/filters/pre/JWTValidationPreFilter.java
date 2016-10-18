@@ -1,6 +1,7 @@
 package com.ibm.microservices.refapp.zuul.filters.pre;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -105,7 +106,8 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		log.trace("Encoded token is: " + jwt);
 		try {
 			final SignedJWT signedJWT = SignedJWT.parse(jwt);
-			final JWSVerifier verifier = new MACVerifier(Base64.encodeBase64(secret.getBytes()));
+			final Base64 base64 = new Base64(true);
+			final JWSVerifier verifier = new MACVerifier(base64.encode(secret.getBytes()));
 
 			log.error("Issuer:" + signedJWT.getJWTClaimsSet().getIssuer());
 			log.error("Issue time:" + signedJWT.getJWTClaimsSet().getIssueTime());
@@ -152,6 +154,9 @@ public class JWTValidationPreFilter extends ZuulFilter {
 			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
 		} catch (JOSEException e) {
 			log.error("JOSEException: " + e.getMessage());
+			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
+		} catch (UnsupportedEncodingException e) {
+			log.error("UnsupportedEncodingException: " + e.getMessage());
 			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
 		}
 		
