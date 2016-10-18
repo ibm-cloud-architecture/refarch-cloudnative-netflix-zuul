@@ -1,7 +1,6 @@
 package com.ibm.microservices.refapp.zuul.filters.pre;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -23,13 +22,13 @@ import com.nimbusds.jwt.SignedJWT;
 public class JWTValidationPreFilter extends ZuulFilter {
 	private static Logger log = LoggerFactory.getLogger(JWTValidationPreFilter.class);
 	
-	private static String secret = 
+	// Base64 URL Encoded shared secret
+	private static String b64uenc_secret = 
 			"VOKJrRJ4UuKbioNd6nIHXCpYkHhxw6-0Im-AupSk9ATvUwF8wwWzLWKQZOMbke-Swo79eca4_QgCZNY0iYAKLgDfWf4lfZ9MmiAkJMVfEWt9pp9r7ycQT8WhkMtPVNULlvOI4RbhBq1dxQkY4A6-h_lVIFbxGF6uHo8KpmwM1jAWxRvKYYu0VbTYOBjQWuakS7dIq11_6maRoAEaLNWjigMKlQSeCP6kVKnpoEDxy1Rqw9sV4ttJjFDrqZRcwwIvNhqVc-eq1Ed-Uzev-HQVMTCDuHs8m0wPRNQYHP6M0fJNRae6tkhvxKEFwZKbco7om6F3VPE-xRyOT_HkpAU9HA";
 	private static String alg = "HS256";
-	
 	/*
 	 * 
-	 * 
+	 *  Added this to API Connect:
 {
   "alg": "HS256",
   "kty": "oct",
@@ -37,6 +36,15 @@ public class JWTValidationPreFilter extends ZuulFilter {
   "k": "VOKJrRJ4UuKbioNd6nIHXCpYkHhxw6-0Im-AupSk9ATvUwF8wwWzLWKQZOMbke-Swo79eca4_QgCZNY0iYAKLgDfWf4lfZ9MmiAkJMVfEWt9pp9r7ycQT8WhkMtPVNULlvOI4RbhBq1dxQkY4A6-h_lVIFbxGF6uHo8KpmwM1jAWxRvKYYu0VbTYOBjQWuakS7dIq11_6maRoAEaLNWjigMKlQSeCP6kVKnpoEDxy1Rqw9sV4ttJjFDrqZRcwwIvNhqVc-eq1Ed-Uzev-HQVMTCDuHs8m0wPRNQYHP6M0fJNRae6tkhvxKEFwZKbco7om6F3VPE-xRyOT_HkpAU9HA"
 }
 	 */
+
+	private static byte[] secret;
+	
+	static{ 
+		// Base64 URL decode the secret for verification
+		final Base64 base64 = new Base64(true);
+		secret = base64.decode(b64uenc_secret.getBytes());
+	}
+	
 	
 	private void sendResponse(int responseCode, String responseBody) {
 		final RequestContext ctx = RequestContext.getCurrentContext();
@@ -58,8 +66,6 @@ public class JWTValidationPreFilter extends ZuulFilter {
 
 	@Override
 	public Object run() {
-		// TODO
-		
 		// unpack header to determine whether it's a trusted entity (?)
 		
 		final RequestContext ctx = RequestContext.getCurrentContext();
@@ -72,7 +78,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 			final String headerName = headers.nextElement();
 			final String header = request.getHeader(headerName);
 			
-			log.error(headerName+ "=" +header);
+			log.info(headerName+ "=" +header);
 		}
 		
 		log.trace(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
@@ -106,14 +112,13 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		log.trace("Encoded token is: " + jwt);
 		try {
 			final SignedJWT signedJWT = SignedJWT.parse(jwt);
-			final Base64 base64 = new Base64(true);
-			final JWSVerifier verifier = new MACVerifier(base64.decode(secret.getBytes()));
+			final JWSVerifier verifier = new MACVerifier(secret);
 
-			log.error("Issuer:" + signedJWT.getJWTClaimsSet().getIssuer());
-			log.error("Issue time:" + signedJWT.getJWTClaimsSet().getIssueTime());
-			log.error("Expiration time:" + signedJWT.getJWTClaimsSet().getExpirationTime());
-			log.error("Not Before time:" + signedJWT.getJWTClaimsSet().getNotBeforeTime());
-			log.error("Audience:" + signedJWT.getJWTClaimsSet().getAudience());
+			log.info("Issuer:" + signedJWT.getJWTClaimsSet().getIssuer());
+			log.info("Issue time:" + signedJWT.getJWTClaimsSet().getIssueTime());
+			log.info("Expiration time:" + signedJWT.getJWTClaimsSet().getExpirationTime());
+			log.info("Not Before time:" + signedJWT.getJWTClaimsSet().getNotBeforeTime());
+			log.info("Audience:" + signedJWT.getJWTClaimsSet().getAudience());
 	
 			
 			// verify the claims
@@ -123,8 +128,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 				return null;
 			}
 			
-		
-			log.error("JWT token is valid!");
+			log.info("JWT token is valid!");
 			
 			// issuer must be "apic"
 			if (signedJWT.getJWTClaimsSet().getIssuer() == null ||
