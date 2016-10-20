@@ -5,13 +5,16 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Enumeration;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.ibm.microservices.refapp.zuul.SecurityConfig;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.nimbusds.jose.JOSEException;
@@ -23,9 +26,9 @@ public class JWTValidationPreFilter extends ZuulFilter {
 	private static Logger log = LoggerFactory.getLogger(JWTValidationPreFilter.class);
 	
 	// Base64 URL Encoded shared secret
-	private static String b64uenc_secret = 
-			"VOKJrRJ4UuKbioNd6nIHXCpYkHhxw6-0Im-AupSk9ATvUwF8wwWzLWKQZOMbke-Swo79eca4_QgCZNY0iYAKLgDfWf4lfZ9MmiAkJMVfEWt9pp9r7ycQT8WhkMtPVNULlvOI4RbhBq1dxQkY4A6-h_lVIFbxGF6uHo8KpmwM1jAWxRvKYYu0VbTYOBjQWuakS7dIq11_6maRoAEaLNWjigMKlQSeCP6kVKnpoEDxy1Rqw9sV4ttJjFDrqZRcwwIvNhqVc-eq1Ed-Uzev-HQVMTCDuHs8m0wPRNQYHP6M0fJNRae6tkhvxKEFwZKbco7om6F3VPE-xRyOT_HkpAU9HA";
-	private static String alg = "HS256";
+	//private static String b64uenc_secret = 
+	//		"VOKJrRJ4UuKbioNd6nIHXCpYkHhxw6-0Im-AupSk9ATvUwF8wwWzLWKQZOMbke-Swo79eca4_QgCZNY0iYAKLgDfWf4lfZ9MmiAkJMVfEWt9pp9r7ycQT8WhkMtPVNULlvOI4RbhBq1dxQkY4A6-h_lVIFbxGF6uHo8KpmwM1jAWxRvKYYu0VbTYOBjQWuakS7dIq11_6maRoAEaLNWjigMKlQSeCP6kVKnpoEDxy1Rqw9sV4ttJjFDrqZRcwwIvNhqVc-eq1Ed-Uzev-HQVMTCDuHs8m0wPRNQYHP6M0fJNRae6tkhvxKEFwZKbco7om6F3VPE-xRyOT_HkpAU9HA";
+	//private static String alg = "HS256";
 	/*
 	 * 
 	 *  Added this to API Connect:
@@ -37,14 +40,17 @@ public class JWTValidationPreFilter extends ZuulFilter {
 }
 	 */
 
-	private static byte[] secret;
+	private final byte[] secret;
 	
-	static{ 
+
+
+	public JWTValidationPreFilter(String sharedSecret) {
+		
+		log.info("shared secret is:" + sharedSecret);
 		// Base64 URL decode the secret for verification
 		final Base64 base64 = new Base64(true);
-		secret = base64.decode(b64uenc_secret.getBytes());
+		secret = base64.decode(sharedSecret);
 	}
-	
 	
 	private void sendResponse(int responseCode, String responseBody) {
 		final RequestContext ctx = RequestContext.getCurrentContext();
@@ -67,6 +73,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 	@Override
 	public Object run() {
 		// unpack header to determine whether it's a trusted entity (?)
+		log.info("shared secret is:" + new String(secret));
 		
 		final RequestContext ctx = RequestContext.getCurrentContext();
 		final HttpServletRequest request = ctx.getRequest();
@@ -81,10 +88,10 @@ public class JWTValidationPreFilter extends ZuulFilter {
 			log.info(headerName+ "=" +header);
 		}
 		
-		log.trace(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
+		log.info(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
 		
 		if (getHeader == null || getHeader.equals("null")) {
-			log.debug("Missing authentication header!");
+			log.info("Missing authentication header!");
 			
 			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Missing authentication header!");
 			return null;
@@ -92,7 +99,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 
 		// the header should be like "Bearer askjdhgkjasdfhkdaslhgkadsjhkd"
 		if (!getHeader.toLowerCase().startsWith("bearer")) {
-			log.debug("Invalid authentication header!");
+			log.info("Invalid authentication header!");
 			
 			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid authentication header!");
 			return null;
@@ -100,7 +107,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		
 		// split the string after the bearer and validate it
 		final String[] arr = getHeader.split("\\s+");
-		log.trace("Header array length is: " + arr.length);
+		log.info("Header array length is: " + arr.length);
 		
 		if (arr.length < 2) {
 			log.debug("Invalid authentication header!");
@@ -109,7 +116,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		}
 		
 		final String jwt = arr[1];
-		log.trace("Encoded token is: " + jwt);
+		log.info("Encoded token is: " + jwt);
 		try {
 			final SignedJWT signedJWT = SignedJWT.parse(jwt);
 			final JWSVerifier verifier = new MACVerifier(secret);
