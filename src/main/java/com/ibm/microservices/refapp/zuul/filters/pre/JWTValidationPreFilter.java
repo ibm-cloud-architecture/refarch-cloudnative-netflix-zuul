@@ -45,8 +45,6 @@ public class JWTValidationPreFilter extends ZuulFilter {
 
 
 	public JWTValidationPreFilter(String sharedSecret) {
-		
-		log.info("shared secret is:" + sharedSecret);
 		// Base64 URL decode the secret for verification
 		final Base64 base64 = new Base64(true);
 		secret = base64.decode(sharedSecret);
@@ -73,7 +71,6 @@ public class JWTValidationPreFilter extends ZuulFilter {
 	@Override
 	public Object run() {
 		// unpack header to determine whether it's a trusted entity (?)
-		log.info("shared secret is:" + new String(secret));
 		
 		final RequestContext ctx = RequestContext.getCurrentContext();
 		final HttpServletRequest request = ctx.getRequest();
@@ -88,10 +85,10 @@ public class JWTValidationPreFilter extends ZuulFilter {
 			log.info(headerName+ "=" +header);
 		}
 		
-		log.info(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
+		log.trace(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
 		
 		if (getHeader == null || getHeader.equals("null")) {
-			log.info("Missing authentication header!");
+			log.debug("Missing authentication header!");
 			
 			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Missing authentication header!");
 			return null;
@@ -99,7 +96,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 
 		// the header should be like "Bearer askjdhgkjasdfhkdaslhgkadsjhkd"
 		if (!getHeader.toLowerCase().startsWith("bearer")) {
-			log.info("Invalid authentication header!");
+			log.debug("Invalid authentication header!");
 			
 			sendResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid authentication header!");
 			return null;
@@ -116,7 +113,7 @@ public class JWTValidationPreFilter extends ZuulFilter {
 		}
 		
 		final String jwt = arr[1];
-		log.info("Encoded token is: " + jwt);
+		log.trace("Encoded token is: " + jwt);
 		try {
 			final SignedJWT signedJWT = SignedJWT.parse(jwt);
 			final JWSVerifier verifier = new MACVerifier(secret);
