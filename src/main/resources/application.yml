@@ -4,7 +4,7 @@ server:
 eureka:
   client:
     serviceUrl:
-       defaultZone: http://192.168.123.4:8761/eureka/
+      defaultZone: ${vcap.services.eureka-service-discovery.credentials.uri:http://localhost:8761/eureka/}
   instance:
     hostname: ${vcap.application.uris[0]:localhost}
     metadataMap:
@@ -16,6 +16,9 @@ eureka:
 #    failFast: true
 #    discovery:
 #      end: true
+
+security:
+  sharedSecret: VOKJrRJ4UuKbioNd6nIHXCpYkHhxw6-0Im-AupSk9ATvUwF8wwWzLWKQZOMbke-Swo79eca4_QgCZNY0iYAKLgDfWf4lfZ9MmiAkJMVfEWt9pp9r7ycQT8WhkMtPVNULlvOI4RbhBq1dxQkY4A6-h_lVIFbxGF6uHo8KpmwM1jAWxRvKYYu0VbTYOBjQWuakS7dIq11_6maRoAEaLNWjigMKlQSeCP6kVKnpoEDxy1Rqw9sV4ttJjFDrqZRcwwIvNhqVc-eq1Ed-Uzev-HQVMTCDuHs8m0wPRNQYHP6M0fJNRae6tkhvxKEFwZKbco7om6F3VPE-xRyOT_HkpAU9HA
 
 ---
 spring:
