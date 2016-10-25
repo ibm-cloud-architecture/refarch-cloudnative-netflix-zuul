@@ -31,8 +31,16 @@ There are no explicit APIs exposed by Zuul.  It is meant to be an API Gateway to
 
 #### Pre-requisites:
 - Install Java JDK 1.8 and ensure it is available in your PATH
+- _(Optional)_ HS-256 Shared Secret Key.  This shared secret key is a Base-64 URL encoded string used by [IBM API Connect](https://github.com/ibm-cloud-architecture/refarch-cloudnative-api) to sign [JWT Tokens](https://jwt.io/).  The Zuul proxy uses the JWT token signature to verify that the API caller is IBM API Connect and rejects all other callers with an HTTP 401 Unauthorized response.  This is implemented as a Zuul "pre" filter.  The shared secret must match what is entered into IBM API Connect definitions.  A sample key has been provided in the git projects, but a new one can be generated following the steps outlined [here](https://github.com/ibm-cloud-architecture/refarch-cloudnative/blob/master/static/security.md#generate-jwt-shared-key).  To update the key, open the application yaml file in ```src/main/resources/application.yml``` and replace the ```sharedSecret``` (i.e. ```VOKJrRJ4UuKbioNd6nIHXCpYkHhxw6-0Im-AupSk9ATvUwF8wwWzLWKQZOMbke-xxx```) with the value generated in the "k" property in the JSON object:
+
+  ```
+  security:
+    sharedSecret: VOKJrRJ4UuKbioNd6nIHXCpYkHhxw6-0Im-AupSk9ATvUwF8wwWzLWKQZOMbke-xxx
+  ```
+
 - _(Optional)_ A local Docker instance (either native or docker-machine based) running on localhost to host container(s). [Click for instructions](https://docs.docker.com/machine/get-started/).
 - _(Optional)_ Apache Maven is used for an alternate build system.  [Click for instructions](https://maven.apache.org/install.html).
+
 
 #### Build the Application Component
 1.  Build the application.  A utility script is provided to easily build using either Gradle (default) or Maven.  You can optionally specify the `-d` parameter to build the associated Docker image as well.  The default Gradle build instructions use a Gradle wrapper requiring no further installation.  The Maven build instructions require Maven to be installed locally.
