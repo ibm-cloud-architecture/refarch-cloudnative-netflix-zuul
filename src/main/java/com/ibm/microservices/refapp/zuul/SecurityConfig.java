@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class SecurityConfig {
 	
 	private String sharedSecret;
+	private boolean enabled;
 	
 	public String getSharedSecret() {
 		return sharedSecret;
@@ -19,4 +20,12 @@ public class SecurityConfig {
 		this.sharedSecret = sharedSecret;
 	}
 
+
+	public boolean getEnabled() {
+		return enabled;
+	}
+	
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 }
