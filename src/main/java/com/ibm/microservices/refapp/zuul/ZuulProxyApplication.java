@@ -49,7 +49,7 @@ public class ZuulProxyApplication {
     
     @Bean
     public JWTValidationPreFilter authenticationFilter() {
-    	return new JWTValidationPreFilter(securityConfig.getSharedSecret());
+    	return new JWTValidationPreFilter(securityConfig.getSharedSecret(),securityConfig.getEnabled());
     }
     
 }
