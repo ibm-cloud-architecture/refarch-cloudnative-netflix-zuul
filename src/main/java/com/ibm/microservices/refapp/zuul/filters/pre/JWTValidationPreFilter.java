@@ -42,13 +42,14 @@ public class JWTValidationPreFilter extends ZuulFilter {
 	 */
 
 	private final byte[] secret;
-	
+	private boolean enabled;
 
 
-	public JWTValidationPreFilter(String sharedSecret) {
+	public JWTValidationPreFilter(String sharedSecret,boolean enabled) {
 		// Base64 URL decode the secret for verification
 		final Base64 base64 = new Base64(true);
 		secret = base64.decode(sharedSecret);
+		this.enabled = enabled;
 	}
 	
 	private void sendResponse(int responseCode, String responseBody) {
@@ -66,11 +67,14 @@ public class JWTValidationPreFilter extends ZuulFilter {
 
 	@Override
 	public boolean shouldFilter() {
-		return true;
+		return enabled;
 	}
 
 	@Override
 	public Object run() {
+		if (!shouldFilter()) {
+			return null;
+		}
 		// unpack header to determine whether it's a trusted entity (?)
 		
 		final RequestContext ctx = RequestContext.getCurrentContext();
