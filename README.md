@@ -73,9 +73,10 @@ There are no explicit APIs exposed by Zuul.  It is meant to be an API Gateway to
 2.  Edit the Bluemix Response File to select your desired external public route, application domain, and other operational details.  The default values in the `.bluemixrc` are acceptable to deploy in to the US-South Bluemix region.
 
 3.  To deploy Zuul as a container group onto the Bluemix Container Service, execute the following script and pass in the previously-noted Eureka location:  
-        `cd bluemix`
-        `./deploy-container-group.sh http://netflix-eureka-cloudarch.mybluemix.net/eureka/`
-
+````
+        cd bluemix
+        ./deploy-container-group.sh http://netflix-eureka-cloudarch.mybluemix.net/eureka/
+````
     This script will create a clustered group of homogeneous containers, with additional management capabilities provided by Bluemix.  The parameter passed into the script is the location of the Eureka service discovery container group, so that the Zuul Proxy container group can register with it upon startup.
 
 4.  The script will complete rather quickly, but the creation of the necessary Container Group and clustered containers may take a few moments. To check on the status of your Zuul Container Group, you can run the following command:  
