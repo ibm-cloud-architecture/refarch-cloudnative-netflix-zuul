@@ -1,0 +1,44 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+        env:
+        - name: eureka_service
+          value: {{ .Values.eureka.service }}
+        - name: eureka_port
+          value: {{ .Values.eureka.port | quote }}
+        - name: eureka_prefer_ip_address
+          value: {{ .Values.eureka.preferIpAddress | quote }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.service.internalPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.service.internalPort }}
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
