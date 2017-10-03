@@ -6,17 +6,29 @@ image:
   repository: ibmcase/spring-zuul-proxy
   tag: latest
   pullPolicy: IfNotPresent
+
 service:
-  name: zuul-proxy
+  name: 
   type: ClusterIP
   externalPort: 8080
   internalPort: 8080
+
 resources:
   limits:
     memory: 256Mi
   requests:
     memory: 64Mi
+
 eureka:
-  service: eureka-server
-  port: 8761
-  preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone:
+
+spring:
+  cloud:
+    config:
+      enabled: false
+      uri:
+
+global:
+  useConfigServerBootstrap: false

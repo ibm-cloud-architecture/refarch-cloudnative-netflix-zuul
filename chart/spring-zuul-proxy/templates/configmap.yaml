@@ -1,0 +1,39 @@
+{{ if .Values.global.useConfigServerBootstrap }}
+{{ else if .Values.config.existingConfigMapName }}
+{{ else }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: zuul-proxy
+data:
+  bootstrap.yaml: |+
+    server:
+      port: {{ .Values.service.internalPort }}
+    spring:
+      application:
+        name: zuul-proxy
+      cloud:
+        config:
+{{ if .Values.spring.cloud.config.enabled }}
+          enabled: {{ .Values.spring.cloud.config.enabled }}
+          uri: {{ required "A valid value of spring.cloud.config.uri is required!" .Values.spring.cloud.config.uri }}
+{{ else }}
+          enabled: false
+{{ end }}
+
+  application.yaml:
+    eureka:
+      client:
+{{ if .Values.eureka.client.serviceUrl.defaultZone }}
+        serviceUrl:
+          defaultZone: {{ .Values.eureka.client.serviceUrl.defaultZone }}
+{{ else }}
+        enabled: false
+{{ end }}
+
+{{ end }}
