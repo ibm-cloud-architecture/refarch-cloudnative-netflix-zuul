@@ -27,6 +27,9 @@ repositories {
 
 
 dependencies {
+    //The following commented lines come from the RESILIENCY branch for Sleuth & Zipkin.
+    //compile('org.springframework.cloud:spring-cloud-sleuth-zipkin')
+    //compile('org.springframework.cloud:spring-cloud-starter-sleuth')
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.cloud:spring-cloud-starter-eureka')
 	compile('org.springframework.cloud:spring-cloud-starter-zuul')
